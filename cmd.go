@@ -28,17 +28,17 @@ func handlerLogin(s *state, cmd command) error {
 		return err
 	}
 
-	fmt.Printf("%v has been set\n", cmd.args[0])
+	fmt.Printf("User %v has been set\n", cmd.args[0])
 	
 	return nil
 }
 
 type commands struct {
-	cmds	map[string]func(*state, command) error
+	cmdsReg		map[string]func(*state, command) error
 }
 
 func (c *commands) run(s *state, cmd command) error {
-	fn, isPresent := c.cmds[cmd.name]
+	fn, isPresent := c.cmdsReg[cmd.name]
 	if !isPresent {
 		return errors.New("command does not exist.")
 	}
@@ -51,5 +51,5 @@ func (c *commands) run(s *state, cmd command) error {
 }
 
 func (c *commands) register(name string, f func(*state, command) error) {
-	c.cmds[name] = f
+	c.cmdsReg[name] = f
 }

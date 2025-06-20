@@ -21,7 +21,7 @@ func main() {
 	}
 
 	var c commands
-	c.cmds = make(map[string]func(*state, command) error)
+	c.cmdsReg = make(map[string]func(*state, command) error)
 
 	// Registering commands
 	c.register("login", handlerLogin)
