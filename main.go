@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/wnvd/gator/internal/config"
+	"github.com/wnvd/gator/internal/database"
 )
 
 const (
@@ -18,6 +21,19 @@ func main() {
 	st.cfg, err = config.Read()
 	if err != nil {
 		fmt.Println("unable to read file %w", err)
+	}
+
+	// database connection
+	db, err := sql.Open("postgres", st.cfg.DBURL)
+	if err != nil {
+		fmt.Println("Failed to connect to the database ", err)
+	}
+
+	dbQueries := database.New(db)
+	st.db = dbQueries
+
+	if err != nil {
+		fmt.Println("Failed to connect to the database ", err)
 	}
 
 	var c commands

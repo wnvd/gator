@@ -6,9 +6,11 @@ import (
 	"os"
 
 	"github.com/wnvd/gator/internal/config"
+	"github.com/wnvd/gator/internal/database"
 )
 
 type state struct {
+	db		*database.Queries
 	cfg		*config.Config
 }
 
