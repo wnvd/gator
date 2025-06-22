@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"os"
 
 	"github.com/wnvd/gator/internal/config"
 	"github.com/wnvd/gator/internal/database"
@@ -17,22 +15,6 @@ type state struct {
 type command struct {
 	name	string
 	args	[]string
-}
-
-
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.args) == 0 {
-		fmt.Println("the login handler expects a single argument, the username.")
-		os.Exit(1)
-	}
-
-	if err := config.SetUser(cmd.args[0], s.cfg); err != nil {
-		return err
-	}
-
-	fmt.Printf("User %v has been set\n", cmd.args[0])
-	
-	return nil
 }
 
 type commands struct {

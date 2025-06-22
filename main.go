@@ -32,15 +32,12 @@ func main() {
 	dbQueries := database.New(db)
 	st.db = dbQueries
 
-	if err != nil {
-		fmt.Println("Failed to connect to the database ", err)
-	}
-
 	var c commands
 	c.cmdsReg = make(map[string]func(*state, command) error)
 
 	// Registering commands
 	c.register("login", handlerLogin)
+	c.register("register", handlerRegister)
 
 
 	args := os.Args
