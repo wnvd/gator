@@ -39,11 +39,14 @@ func main() {
 	c.register("login", handlerLogin)
 	c.register("register", handlerRegister)
 
+	// NOTE: This command is for development purpose only
+	c.register("reset", handlerReset)
 
 	args := os.Args
 
 	if len(args) < 2 {
 		fmt.Println("bad command")
+		fmt.Println("Format: <command> <args>")
 		os.Exit(1)
 	}
 
