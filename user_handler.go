@@ -62,6 +62,29 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+func handlerGetUsers(s *state, cmd command) error {
+
+	names, err := s.db.GetAllUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("unable to get user data: %w", err)
+	}
+
+	if len(names) == 0 {
+		fmt.Println("no users are registered")
+		os.Exit(1)
+	}
+
+	for _, name := range names {
+		if name == s.cfg.CurrentUserName {
+			fmt.Printf("%v (current)\n", name)
+			continue
+		}
+		fmt.Println(name) 
+	}
+
+	return nil
+}
+
 // NOTE: This handler is for development purpose only.
 func handlerReset(s *state, cmd command) error {
 	if err := s.db.DeleteAllUsers(context.Background()); err != nil {

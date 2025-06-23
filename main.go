@@ -38,6 +38,7 @@ func main() {
 	// Registering commands
 	c.register("login", handlerLogin)
 	c.register("register", handlerRegister)
+	c.register("users", handlerGetUsers)
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)
