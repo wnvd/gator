@@ -9,3 +9,9 @@ VALUES (
     $6
 )
 RETURNING *;
+
+-- name: GetAllFeeds :many
+SELECT * FROM feeds;
+
+-- name: DeleteAllFeeds :exec
+DROP TABLE feeds;

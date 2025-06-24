@@ -10,10 +10,6 @@ import (
 	"github.com/wnvd/gator/internal/database"
 )
 
-const (
-	USERNAME = "naveed"
-)
-
 func main() {
 
 	var st state
@@ -41,6 +37,7 @@ func main() {
 	c.register("users", handlerGetUsers)
 	c.register("agg", handlerAggregate)
 	c.register("addfeed", handlerAddFeed)
+	c.register("feeds", handlerShowFeeds)
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)
