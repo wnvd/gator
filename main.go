@@ -39,6 +39,7 @@ func main() {
 	c.register("login", handlerLogin)
 	c.register("register", handlerRegister)
 	c.register("users", handlerGetUsers)
+	c.register("agg", handlerAggregate)
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)

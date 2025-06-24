@@ -95,6 +95,29 @@ func handlerReset(s *state, cmd command) error {
 	return nil
 }
 
+func handlerAggregate(s *state, cmd command) error {
+
+	url := "https://www.wagslane.dev/index.xml"
+
+	rssFeed, err := fetchFeed(context.Background(), url)
+	if err != nil {
+		return fmt.Errorf("unable to fetch rss feed: %w", err)
+	}
+
+	fmt.Println("Title :", rssFeed.Channel.Title)
+	fmt.Println("Link :", rssFeed.Channel.Link)
+	fmt.Println("Desc :", rssFeed.Channel.Description)
+	for _, item := range rssFeed.Channel.Item {
+		fmt.Println("Title :", item.Title)
+		fmt.Println("Link :", item.Link)
+		fmt.Println("Desc :", item.Description)
+		fmt.Println("PubDate :", item.PubDate)
+		fmt.Println("-----")
+	}
+
+	return nil
+}
+
 func printUser(user database.User) {
 	fmt.Printf(" * ID:		%v\n", user.ID)
 	fmt.Printf(" * Name:		%v\n", user.Name)
