@@ -41,7 +41,20 @@ func handlerAddFeed(s *state, cmd command) error {
 		return fmt.Errorf("unable to create feed for the given user %w", err)
 	}
 
-	fmt.Printf("Feed Added Successfully\n")
+	followFeed := database.CreateFeedFollowParams {
+		ID: uuid.New(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), followFeed)
+	if err != nil {
+		return fmt.Errorf("failed to follow added feed: %w", err)
+	}
+
+	fmt.Printf("Feed Added and Followed Successfully\n")
 	fmt.Println("--------------------------")
 	fmt.Printf("Feed name: (%v)\n", feedName)
 	fmt.Printf("Feed URL: (%v)\n", url)
@@ -71,6 +84,61 @@ func handlerShowFeeds(s *state, _ command) error {
 		}
 		fmt.Println("User: ", user.Name)
 		fmt.Println()
+	}
+
+	return nil
+}
+
+func handlerFollowFeed(s *state, cmd command) error {
+	if len(cmd.args) == 0 {
+		fmt.Println("follow command need a url: follow <url>")
+		os.Exit(1)
+	}
+	
+	feedURL := cmd.args[0]
+	user, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return fmt.Errorf("unable to get user details: %w", err)
+	}
+
+	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
+	if err != nil {
+		return fmt.Errorf("unable to get feed details: %w", err)
+	}
+
+	followfeed := database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), followfeed)
+	if err != nil {
+		return fmt.Errorf("unable to link feed to the current user:  %w", err)
+	}
+
+	fmt.Printf("User: %s FOLLOWS feed: %s", user.Name, feed.Url)
+
+	return nil
+}
+
+func handlerListUserFeeds(s *state, cmd command) error {
+
+	userName :=  s.cfg.CurrentUserName
+	user, err := s.db.GetUserByName(context.Background(), userName)
+	if err != nil {
+		return fmt.Errorf("unable to get user details: %w", err)
+	}
+
+	userFeeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
+	if err != nil {
+		return fmt.Errorf("unable to get user feeds: %w", err)
+	}
+
+	for _, feed := range userFeeds {
+		fmt.Println(feed.FeedName)
 	}
 
 	return nil

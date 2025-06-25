@@ -38,6 +38,8 @@ func main() {
 	c.register("agg", handlerAggregate)
 	c.register("addfeed", handlerAddFeed)
 	c.register("feeds", handlerShowFeeds)
+	c.register("follow", handlerFollowFeed)
+	c.register("following", handlerListUserFeeds)
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)
