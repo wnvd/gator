@@ -40,6 +40,7 @@ func main() {
 	c.register("feeds", handlerShowFeeds)
 	c.register("follow", middlewareLogginIn(handlerFollowFeed))
 	c.register("following", middlewareLogginIn(handlerListUserFeeds))
+	c.register("unfollow", middlewareLogginIn(handlerUnfollowFeed))
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)

@@ -10,7 +10,6 @@ import (
 	"github.com/wnvd/gator/internal/database"
 )
 
-
 func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 2 {
 		fmt.Println("addfeed command needs <user-name> and <url>")
@@ -21,10 +20,10 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	url := cmd.args[1]
 
 	feed := database.CreateFeedParams{
-		ID: uuid.New(),
-		Name: feedName,
-		Url: url,
-		UserID: user.ID,
+		ID:        uuid.New(),
+		Name:      feedName,
+		Url:       url,
+		UserID:    user.ID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -34,10 +33,10 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("unable to create feed for the given user %w", err)
 	}
 
-	followFeed := database.CreateFeedFollowParams {
-		ID: uuid.New(),
-		UserID: user.ID,
-		FeedID: feed.ID,
+	followFeed := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -96,9 +95,9 @@ func handlerFollowFeed(s *state, cmd command, user database.User) error {
 	}
 
 	followfeed := database.CreateFeedFollowParams{
-		ID: uuid.New(),
-		UserID: user.ID,
-		FeedID: feed.ID,
+		ID:        uuid.New(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -122,6 +121,31 @@ func handlerListUserFeeds(s *state, cmd command, user database.User) error {
 	for _, feed := range userFeeds {
 		fmt.Println(feed.FeedName)
 	}
+
+	return nil
+}
+
+func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
+
+	if len(cmd.args) == 0 {
+		return fmt.Errorf("usage: %s <feed-name>", cmd.name)
+	}
+
+	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0])
+	if err != nil {
+		return err
+	}
+
+	feedFollow := database.DeleteFeedFollowByUserAndURLParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+
+	if err = s.db.DeleteFeedFollowByUserAndURL(context.Background(), feedFollow); err != nil {
+		return err
+	}
+
+	fmt.Printf("%v has been unfollowed", feed.Url)
 
 	return nil
 }
