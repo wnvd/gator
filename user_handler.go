@@ -13,7 +13,7 @@ import (
 
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
-		fmt.Println("the login handler expects a single argument, the username.")
+		fmt.Println("usage: %s <user-name>", cmd.name)
 		os.Exit(1)
 	}
 
@@ -33,7 +33,7 @@ func handlerLogin(s *state, cmd command) error {
 
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
-		fmt.Println("the register handler expects a single argument, the username.")
+		fmt.Println("usage: %s <user-name>", cmd.name)
 		os.Exit(1)
 	}
 

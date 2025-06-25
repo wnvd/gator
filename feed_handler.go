@@ -12,7 +12,7 @@ import (
 
 func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 2 {
-		fmt.Println("addfeed command needs <user-name> and <url>")
+		fmt.Println("usage: %s <feed-name> <url>", cmd.name)
 		os.Exit(1)
 	}
 
@@ -83,7 +83,7 @@ func handlerShowFeeds(s *state, _ command) error {
 
 func handlerFollowFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) == 0 {
-		fmt.Println("follow command need a url: follow <url>")
+		fmt.Println("usage: %s <url>", cmd.name)
 		os.Exit(1)
 	}
 	
