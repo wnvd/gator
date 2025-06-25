@@ -36,10 +36,10 @@ func main() {
 	c.register("register", handlerRegister)
 	c.register("users", handlerGetUsers)
 	c.register("agg", handlerAggregate)
-	c.register("addfeed", handlerAddFeed)
+	c.register("addfeed", middlewareLogginIn(handlerAddFeed))
 	c.register("feeds", handlerShowFeeds)
-	c.register("follow", handlerFollowFeed)
-	c.register("following", handlerListUserFeeds)
+	c.register("follow", middlewareLogginIn(handlerFollowFeed))
+	c.register("following", middlewareLogginIn(handlerListUserFeeds))
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)
