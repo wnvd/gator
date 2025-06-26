@@ -97,28 +97,25 @@ func handlerReset(s *state, cmd command) error {
 
 func handlerAggregate(s *state, cmd command) error {
 
-	url := "https://www.wagslane.dev/index.xml"
+	if len(cmd.args) < 1 || len(cmd.args) > 2 {
+		fmt.Printf("usage: %s <time_between_request>\ne.g %s 10s\n", cmd.name, cmd.name)
+		os.Exit(1)
+	}
 
-	rssFeed, err := fetchFeed(context.Background(), url)
+	timeBetweenReqs, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
-		return fmt.Errorf("unable to fetch rss feed: %w", err)
+		fmt.Println("unable to parse time argument")
+		return err
 	}
 
-	fmt.Println("Title :", rssFeed.Channel.Title)
-	fmt.Println("Link :", rssFeed.Channel.Link)
-	fmt.Println("Desc :", rssFeed.Channel.Description)
-	for _, item := range rssFeed.Channel.Item {
-		fmt.Println("Title :", item.Title)
-		fmt.Println("Link :", item.Link)
-		fmt.Println("Desc :", item.Description)
-		fmt.Println("PubDate :", item.PubDate)
-		fmt.Println("-----")
-	}
+	ticker := time.NewTicker(timeBetweenReqs)
 
-	return nil
+	for ; ; <- ticker.C {
+		scrapeFeeds(s)
+	}
 }
 
 func printUser(user database.User) {
 	fmt.Printf(" * ID:		%v\n", user.ID)
-	fmt.Printf(" * Name:		%v\n", user.Name)
+	fmt.Printf(" * Name:	%v\n", user.Name)
 }

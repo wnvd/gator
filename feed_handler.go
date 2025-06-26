@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"time"
@@ -12,7 +13,7 @@ import (
 
 func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 2 {
-		fmt.Println("usage: %s <feed-name> <url>", cmd.name)
+		fmt.Printf("usage: %s <feed-name> <url>\n", cmd.name)
 		os.Exit(1)
 	}
 
@@ -26,11 +27,15 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 		UserID:    user.ID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
+		LastFetchedAt: sql.NullTime{
+			Time: time.Now().UTC(),
+			Valid: true,
+		},
 	}
 
 	_, err := s.db.CreateFeed(context.Background(), feed)
 	if err != nil {
-		return fmt.Errorf("unable to create feed for the given user %w", err)
+		return fmt.Errorf("unable to create feed for the given user %w\n", err)
 	}
 
 	followFeed := database.CreateFeedFollowParams{
@@ -43,7 +48,7 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 
 	_, err = s.db.CreateFeedFollow(context.Background(), followFeed)
 	if err != nil {
-		return fmt.Errorf("failed to follow added feed: %w", err)
+		return fmt.Errorf("failed to follow added feed: %w\n", err)
 	}
 
 	fmt.Printf("Feed Added and Followed Successfully\n")
@@ -72,7 +77,7 @@ func handlerShowFeeds(s *state, _ command) error {
 		fmt.Println("URL: ", feed.Url)
 		user, err := s.db.GetUserById(context.Background(), feed.UserID)
 		if err != nil {
-			return fmt.Errorf("unable to fetch user by ID provided from feed: %w", err)
+			return fmt.Errorf("unable to fetch user by ID provided from feed: %w\n", err)
 		}
 		fmt.Println("User: ", user.Name)
 		fmt.Println()
@@ -83,7 +88,7 @@ func handlerShowFeeds(s *state, _ command) error {
 
 func handlerFollowFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) == 0 {
-		fmt.Println("usage: %s <url>", cmd.name)
+		fmt.Printf("usage: %s <url>\n", cmd.name)
 		os.Exit(1)
 	}
 	
@@ -107,7 +112,7 @@ func handlerFollowFeed(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("unable to link feed to the current user:  %w", err)
 	}
 
-	fmt.Printf("User: %s FOLLOWS feed: %s", user.Name, feed.Url)
+	fmt.Printf("User: %s FOLLOWS feed: %s\n", user.Name, feed.Url)
 
 	return nil
 }
@@ -128,7 +133,7 @@ func handlerListUserFeeds(s *state, cmd command, user database.User) error {
 func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
 
 	if len(cmd.args) == 0 {
-		return fmt.Errorf("usage: %s <feed-name>", cmd.name)
+		return fmt.Errorf("usage: %s <feed-name>\n", cmd.name)
 	}
 
 	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0])
@@ -145,7 +150,7 @@ func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
 		return err
 	}
 
-	fmt.Printf("%v has been unfollowed", feed.Url)
+	fmt.Printf("%v has been unfollowed\n", feed.Url)
 
 	return nil
 }
