@@ -41,6 +41,7 @@ func main() {
 	c.register("follow", middlewareLogginIn(handlerFollowFeed))
 	c.register("following", middlewareLogginIn(handlerListUserFeeds))
 	c.register("unfollow", middlewareLogginIn(handlerUnfollowFeed))
+	c.register("browse", middlewareLogginIn(handlerBrowsePost))
 
 	// NOTE: This command is for development purpose only
 	c.register("reset", handlerReset)

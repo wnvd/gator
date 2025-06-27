@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/wnvd/gator/internal/database"
@@ -34,16 +35,34 @@ func scrapeFeeds(s *state) error {
 		return err
 	}
 
-	fmt.Println("Channel Title :",rssFeed.Channel.Title)
-	fmt.Println("Channel Link :",rssFeed.Channel.Link)
-	fmt.Println("Channel Description :",rssFeed.Channel.Description)
-
 	for _, val := range rssFeed.Channel.Item {
-		fmt.Println("Item Title: ", val.Title)
-		fmt.Println("Item Link: ", val.Link)
-		fmt.Println("Item PubDate: ", val.PubDate)
-		fmt.Println("Item Description: ", val.Description)
-		fmt.Println()
+
+		// pubdate parsing
+		var parsedPubTime sql.NullTime
+		parsedPubTime.Time, err = time.Parse(time.RFC3339, val.PubDate)
+		parsedPubTime.Valid = true
+		if err != nil {
+			parsedPubTime.Valid = false
+		}
+
+		post := database.CreatePostParams {
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			Title: val.Title,
+			Url: val.Link,
+			Description: val.Description,
+			PublishedAt: parsedPubTime,
+			FeedID: markedfeed.ID,
+		}
+
+		_, err = s.db.CreatePost(context.Background(), post)
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate") {
+				continue
+			} else {
+				fmt.Println(err.Error())
+			}
+		}
 	}
 
 	return nil 

@@ -154,3 +154,40 @@ func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
 
 	return nil
 }
+
+func handlerBrowsePost(s *state, cmd command, user database.User) error {
+	var limit int32
+	if len(cmd.args) == 0 {
+		limit = 2
+	}
+	
+	postData := database.GetPostsForUserParams {
+		UserID: user.ID,
+		Limit: limit,
+	}
+	
+	posts, err := s.db.GetPostsForUser(context.Background(), postData)
+	if err != nil {
+		fmt.Println("")
+		return err
+	}
+
+	if len(posts) == 0 {
+		fmt.Println("No posts to display...")
+		return nil
+	}
+
+	for _, post := range posts {
+		feed, err := s.db.GetFeedByID(context.Background(), post.PostsFeedID)
+		if err != nil {
+			fmt.Print("Failed to fetch feed data")
+			feed = database.Feed{}
+		}
+		fmt.Println("Feed Title: ", feed.Name)
+		fmt.Println("Post Title: ", post.PostTitle)
+		fmt.Println("Post URL: ", post.PostUrl)
+		fmt.Println("Post Description: ", post.PostDesc)
+	}
+
+	return nil
+}
